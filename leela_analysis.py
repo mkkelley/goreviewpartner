@@ -602,6 +602,7 @@ if __name__ == "__main__":
 		
 		for filename in parameters[1]:
 			move_selection,intervals,variation,komi,nogui,profil,bot_args=leela_parse_command_line(filename,parameters[0])
+			Config.set("Leela", "SlowParameters", Config.get("Leela", "SlowParameters") + " " + " ".join(bot_args))
 			if nogui:
 				log("File to analyse:",filename)
 				popup=RunAnalysis("no-gui",filename,move_selection,intervals,variation-1,komi,profil)
