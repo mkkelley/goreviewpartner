@@ -396,6 +396,14 @@ class LeelaZeroOpenMove(BotOpenMove):
 		self.name='Leela Zero'
 		self.my_starting_procedure=leela_zero_starting_procedure
 
+def leela_zero_parse_command_line(filename, argv):
+    parsed_command_line = parse_command_line(filename,argv)
+    bot_args = []
+    for p,v in argv:
+        if p not in ["--range", "--color", "--variation", "--komi", "--no-gui", "--profil"]:
+            bot_args += (p, v)
+    return parsed_command_line + tuple([bot_args])
+
 LeelaZero={}
 LeelaZero['name']="LeelaZero"
 LeelaZero['gtp_name']="Leela Zero"
@@ -431,7 +439,7 @@ if __name__ == "__main__":
 		top.mainloop()
 	else:
 		try:
-			parameters=getopt.getopt(argv[1:], '', ['no-gui','range=', 'color=', 'komi=',"variation=", "profil="])
+                    parameters=getopt.getopt(argv[1:], 't:', ['no-gui','range=', 'color=', 'komi=',"variation=", "profil=", "gpu="])
 		except Exception, e:
 			show_error(str(e)+"\n"+usage)
 			sys.exit()
@@ -444,7 +452,8 @@ if __name__ == "__main__":
 		batch=[]
 		
 		for filename in parameters[1]:
-			move_selection,intervals,variation,komi,nogui,profil=parse_command_line(filename,parameters[0])
+			move_selection,intervals,variation,komi,nogui,profil,bot_args=parse_command_line(filename,parameters[0])
+                        Config.set("LeelaZero", "SlowParameters", Config.get("LeelaZero", "SlowParameters") + " " + " ".join(bot_args))
 			if nogui:
 				log("File to analyse:",filename)
 				popup=RunAnalysis("no-gui",filename,move_selection,intervals,variation-1,komi,profil)
